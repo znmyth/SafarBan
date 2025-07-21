@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "518714241554",
+    "project_id": "safarban-1f41e",
+    "storage_bucket": "safarban-1f41e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518714241554:android:a0e79c05318df8f1475ecb",
+        "android_client_info": {
+          "package_name": "ir.khu.safarban"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKrpQTMuu50-1-Hnua2euX0EiyGCLWfZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

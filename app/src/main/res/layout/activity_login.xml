@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_signup_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_24sdp"
+        android:gravity="center_horizontal">
+
+        <!-- عنوان صفحه -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="بریم که وارد شیم!"
+            android:textSize="@dimen/_24ssp"
+            android:textColor="#033a60"
+            android:fontFamily="@font/vazirbold"
+            android:layout_marginTop="@dimen/_32sdp"
+            android:layout_marginBottom="@dimen/_16sdp" />
+
+        <!-- باکس فرم ورود -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/signup_form_bg"
+            android:padding="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_32sdp">
+
+            <!-- ایمیل -->
+            <EditText
+                android:id="@+id/login_etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="ایمیل"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:textColorHint="#4E4E4E"
+                android:textDirection="rtl" />
+
+            <!-- رمز عبور -->
+            <EditText
+                android:id="@+id/login_etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="رمز عبور"
+                android:inputType="textPassword"
+                android:minHeight="48dp"
+                android:textColorHint="#4E4E4E"
+                android:textDirection="rtl" />
+
+            <!-- فراموشی رمز عبور -->
+            <TextView
+                android:id="@+id/login_tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="رمزتو یادت رفته؟"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_gravity="end"
+                android:padding="4dp" />
+
+            <!-- دکمه ورود -->
+            <Button
+                android:id="@+id/login_btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="بزن بریم سفر، مارکو!"
+                android:backgroundTint="#033a60"
+                android:textColor="#F2DDC3"
+                android:fontFamily="@font/vazirbold"
+                android:layout_marginTop="@dimen/_16sdp" />
+
+            <!-- یا ورود با گوگل -->
+            <Button
+                android:id="@+id/login_btnGoogleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ورود با گوگل"
+                android:backgroundTint="#DD4B39"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/vazirbold"
+                android:layout_marginTop="@dimen/_8sdp" />
+
+            <!-- رفتن به ثبت‌نام -->
+            <TextView
+                android:id="@+id/login_tvSignup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="حساب نداری؟ ثبت‌نام کن!"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_signup_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_24sdp"
+        android:gravity="center_horizontal">
+
+        <!-- عنوان اصلی -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="یه حساب کاربریمون نشه!"
+            android:textSize="@dimen/_24ssp"
+            android:textColor="#033a60"
+            android:textAlignment="viewStart"
+            android:layoutDirection="rtl"
+            android:fontFamily="@font/vazirbold"
+            android:layout_marginTop="@dimen/_32sdp"
+            android:layout_marginBottom="@dimen/_16sdp" />
+
+        <!-- باکس فرم ثبت‌نام -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/signup_form_bg"
+            android:padding="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_32sdp"
+            android:layoutDirection="rtl">
+
+            <!-- ایمیل -->
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="ایمیل"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:textColorHint="#737373"
+                android:textDirection="rtl" />
+
+            <TextView
+                android:id="@+id/tvEmailHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="روح که نیستی، پس ایمیل واقعی بزن!"
+                android:textSize="@dimen/_9ssp"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:gravity="right" />
+
+            <!-- نام کاربری -->
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="نام کاربری"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:textColorHint="#4E4E4E"
+                android:textDirection="rtl" />
+
+            <TextView
+                android:id="@+id/tvUsernameHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="یه اسم خفن انتخاب کن، قراره باهاش بری سفر!"
+                android:textSize="@dimen/_9ssp"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:gravity="right" />
+
+            <!-- رمز عبور -->
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="رمز عبور"
+                android:inputType="textPassword"
+                android:textColorHint="#4E4E4E"
+                android:textDirection="rtl"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <TextView
+                android:id="@+id/tvPasswordHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="رمزی بزن که حتی خودت هم یادت نیاد:)"
+                android:textSize="@dimen/_9ssp"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:gravity="right" />
+
+            <!-- تکرار رمز عبور -->
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:backgroundTint="#033a60"
+                android:fontFamily="@font/vazirmedium"
+                android:gravity="right"
+                android:hint="تکرار رمز عبور"
+                android:inputType="textPassword"
+                android:minHeight="48dp"
+                android:textColorHint="#4E4E4E"
+                android:textDirection="rtl" />
+
+            <TextView
+                android:id="@+id/tvConfirmPasswordHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="دوباره رمزتو بزن، ببینم یادته یا نه!"
+                android:textSize="@dimen/_9ssp"
+                android:textColor="#033A60"
+                android:fontFamily="@font/vazirregular"
+                android:layout_marginTop="@dimen/_1sdp"
+                android:layout_marginBottom="@dimen/_24sdp"
+                android:gravity="right" />
+
+            <!-- دکمه ثبت‌نام -->
+            <Button
+                android:id="@+id/btnSignup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="بزن بریم!"
+                android:backgroundTint="#033a60"
+                android:textColor="#F2DDC3"
+                android:fontFamily="@font/vazirbold"
+                android:layout_marginTop="@dimen/_8sdp" />
+
+            <!-- دکمه بازگشت -->
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="پشیمون شدم!"
+                android:backgroundTint="#CCCCCC"
+                android:textColor="#000000"
+                android:fontFamily="@font/vazirregular"
+                android:layout_marginTop="@dimen/_8sdp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

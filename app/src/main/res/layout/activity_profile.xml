@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="@dimen/_24sdp">
+
+    <!-- متن خوش‌آمدگویی -->
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="این اولین قدم تو برای پخته شدنه! خوش اومدی😎✌️"
+        android:textSize="@dimen/_20ssp"
+        android:fontFamily="@font/vazirbold"
+        android:textColor="#033A60"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_80sdp"
+        android:gravity="center"
+        android:textAlignment="center" />
+
+    <!-- دکمه‌های ورود و ثبت‌نام -->
+    <LinearLayout
+        android:id="@+id/layoutAuthButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvWelcome"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_40sdp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="@dimen/_48sdp"
+            android:layout_marginEnd="@dimen/_16sdp"
+            android:backgroundTint="#033a60"
+            android:fontFamily="@font/vazirmedium"
+            android:text="ورود"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/_14ssp" />
+
+        <Button
+            android:id="@+id/btnSignup"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="@dimen/_48sdp"
+            android:text="ثبت نام"
+            android:textSize="@dimen/_14ssp"
+            android:backgroundTint="#033a60"
+            android:textColor="#FFFFFF"
+            android:fontFamily="@font/vazirmedium" />
+    </LinearLayout>
+
+    <!-- لایه پروفایل (در ابتدا مخفی) -->
+    <LinearLayout
+        android:id="@+id/layoutUserProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="@dimen/_24sdp">
+
+        <ImageView
+            android:id="@+id/ivProfilePic"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="@dimen/_120sdp"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="تصویر پروفایل"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circle_background"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="نام کاربری"
+            android:textSize="@dimen/_16ssp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/vazirbold"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="@dimen/_48sdp"
+            android:text="خروج"
+            android:textSize="@dimen/_14ssp"
+            android:layout_marginTop="@dimen/_24sdp"
+            android:backgroundTint="#033a60"
+            android:textColor="#FFFFFF"
+            android:fontFamily="@font/vazirmedium" />
+    </LinearLayout>
+
+</RelativeLayout>
