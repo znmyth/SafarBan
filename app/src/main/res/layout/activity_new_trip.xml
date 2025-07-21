@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="24dp"
+    android:layoutDirection="rtl">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layoutDirection="rtl">
+
+        <!-- عنوان -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✈️ می‌خوای بری سفر؟"
+            android:textSize="24sp"
+            android:textColor="#033a60"
+            android:fontFamily="@font/vazirbold"
+            android:layout_marginBottom="24dp" />
+
+        <!-- مقصد -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="مقصدت کجاست؟"
+            android:textColor="#033a60"
+            android:fontFamily="@font/vazirmedium"
+            android:layout_marginBottom="8dp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/etDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="نام شهر یا کشور..."
+            android:background="@drawable/input_background"
+            android:fontFamily="@font/vazirregular"
+            android:textDirection="rtl"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- تاریخ سفر -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="تاریخ سفر:"
+            android:textColor="#033a60"
+            android:fontFamily="@font/vazirmedium"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/etStartDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="تاریخ رفت"
+                android:inputType="none"
+                android:background="@drawable/input_background"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/vazirregular"
+                android:textDirection="rtl" />
+
+            <EditText
+                android:id="@+id/etEndDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="تاریخ برگشت"
+                android:inputType="none"
+                android:background="@drawable/input_background"
+                android:padding="12dp"
+                android:fontFamily="@font/vazirregular"
+                android:textDirection="rtl" />
+        </LinearLayout>
+
+        <!-- نوتیفیکیشن‌ها -->
+        <CheckBox
+            android:id="@+id/cbAlarmDayBefore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="یه روز قبل بهم بگو!"
+            android:fontFamily="@font/vazirregular"
+            android:layout_marginBottom="8dp" />
+
+        <CheckBox
+            android:id="@+id/cbAlarmDayOf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="روز سفر یادم بنداز!"
+            android:fontFamily="@font/vazirregular"
+            android:layout_marginBottom="16dp" />
+
+        <!-- همسفر -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right|center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="همسفر داری؟"
+                android:fontFamily="@font/vazirmedium"
+                android:textSize="16sp"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnAddCompanion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="➕ اضافه کن"
+                android:fontFamily="@font/vazirmedium"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#033a60"
+                android:paddingHorizontal="12dp"
+                android:minHeight="0dp"
+                android:minWidth="0dp" />
+        </LinearLayout>
+
+        <!-- وسیله سفر -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="با چی می‌ری؟"
+            android:fontFamily="@font/vazirmedium"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp" />
+
+        <Spinner
+            android:id="@+id/spinnerTransportType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_background"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- نوع سفر -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="نوع سفر:"
+            android:fontFamily="@font/vazirmedium"
+            android:textSize="16sp"
+            android:layout_marginBottom="6dp" />
+
+        <Spinner
+            android:id="@+id/spinnerTripType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_background"
+            android:padding="10dp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- دکمه ثبت -->
+        <Button
+            android:id="@+id/btnSaveTrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎒 شروع سفر!"
+            android:textColor="#FFFFFF"
+            android:fontFamily="@font/vazirbold"
+            android:backgroundTint="#033a60"
+            android:padding="16dp" />
+    </LinearLayout>
+</ScrollView>
