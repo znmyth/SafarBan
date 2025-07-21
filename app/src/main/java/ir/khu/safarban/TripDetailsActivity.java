@@ -1,3 +1,5 @@
+package ir.khu.safarban;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,14 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import saman.zamani.persiandate.PersianDate;
-import saman.zamani.persiandate.PersianDateFormat;
-
-public class TripCheckActivity extends AppCompatActivity {
+public class TripDetailsActivity extends AppCompatActivity {
 
     TextView tvTripTitle, tvTripDates, tvTripDestination, tvTripType, tvTransportType, tvDaysRemaining;
     EditText etNewItem, etNotes;
@@ -39,14 +38,13 @@ public class TripCheckActivity extends AppCompatActivity {
     String prefNotesKey = "trip_notes";
     String prefChecklistKey = "trip_checklist";
 
-    PersianDate tripStartDate, tripEndDate;
+    PersianCalendar tripStartDate, tripEndDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trip_check); // اسم فایل xml تو همین جا بذار
+        setContentView(R.layout.activity_trip_details);
 
-        // پیدا کردن ویوها
         tvTripTitle = findViewById(R.id.tvTripTitle);
         tvTripDates = findViewById(R.id.tvTripDates);
         tvTripDestination = findViewById(R.id.tvTripDestination);
@@ -56,7 +54,6 @@ public class TripCheckActivity extends AppCompatActivity {
 
         etNewItem = findViewById(R.id.etNewItem);
         etNotes = findViewById(R.id.etNotes);
-
         btnAddItem = findViewById(R.id.btnAddItem);
         btnSave = findViewById(R.id.btnSave);
 
@@ -65,43 +62,33 @@ public class TripCheckActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("trip_data", Context.MODE_PRIVATE);
 
-        // گرفتن داده‌ها از Intent
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
         String destination = intent.getStringExtra("destination");
         String type = intent.getStringExtra("type");
         String transport = intent.getStringExtra("transport");
-        String fromDateStr = intent.getStringExtra("from_date");  // مثل "1403/05/25"
+        String fromDateStr = intent.getStringExtra("from_date");
         String toDateStr = intent.getStringExtra("to_date");
 
-        // ست کردن اطلاعات
         if (title != null) tvTripTitle.setText(title);
         if (destination != null) tvTripDestination.setText("مقصد: " + destination);
         if (type != null) tvTripType.setText("نوع سفر: " + type);
         if (transport != null) tvTransportType.setText("وسیله: " + transport);
 
-        // تبدیل رشته تاریخ به PersianDate
         tripStartDate = parsePersianDate(fromDateStr);
         tripEndDate = parsePersianDate(toDateStr);
 
         if (tripStartDate != null && tripEndDate != null) {
-            PersianDateFormat pdFormat = new PersianDateFormat("yyyy/MM/dd");
-            tvTripDates.setText("تاریخ: " + pdFormat.format(tripStartDate) + " تا " + pdFormat.format(tripEndDate));
-
-            // محاسبه تعداد روز باقی مانده
+            tvTripDates.setText("تاریخ: " + fromDateStr + " تا " + toDateStr);
             updateDaysRemaining();
         }
 
-        // آماده‌سازی لیست چک‌لیست
         checklistItems = new ArrayList<>();
-
-        // نمونه اولیه (اگر می‌خوای می‌تونی از SharedPreferences هم بارگذاری کنی)
         loadChecklist();
 
         adapter = new ChecklistAdapter(checklistItems);
         recyclerChecklist.setAdapter(adapter);
 
-        // افزودن آیتم جدید
         btnAddItem.setOnClickListener(v -> {
             String newItemText = etNewItem.getText().toString().trim();
             if (!TextUtils.isEmpty(newItemText)) {
@@ -114,27 +101,26 @@ public class TripCheckActivity extends AppCompatActivity {
             }
         });
 
-        // بارگذاری یادداشت از SharedPreferences
         String savedNotes = prefs.getString(prefNotesKey, "");
         etNotes.setText(savedNotes);
 
-        // دکمه ثبت — ذخیره یادداشت و چک‌لیست
         btnSave.setOnClickListener(v -> {
             saveNotes();
             saveChecklist();
-            Toast.makeText(this, "اطلاعات ثبت شد", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "اطلاعات ذخیره شد", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private PersianDate parsePersianDate(String persianDateStr) {
+    private PersianCalendar parsePersianDate(String dateStr) {
         try {
-            if (persianDateStr == null) return null;
-            String[] parts = persianDateStr.split("/");
-            if (parts.length != 3) return null;
+            if (dateStr == null) return null;
+            String[] parts = dateStr.split("/");
             int y = Integer.parseInt(parts[0]);
-            int m = Integer.parseInt(parts[1]);
+            int m = Integer.parseInt(parts[1]) - 1; // PersianCalendar uses 0-based months
             int d = Integer.parseInt(parts[2]);
-            return new PersianDate(y, m, d);
+            PersianCalendar calendar = new PersianCalendar();
+            calendar.setPersianDate(y, m, d);
+            return calendar;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -142,37 +128,29 @@ public class TripCheckActivity extends AppCompatActivity {
     }
 
     private void updateDaysRemaining() {
-        if (tripStartDate == null) return;
-
-        PersianDate today = new PersianDate();
-        long diffMillis = tripStartDate.getTime() - today.getTime();
-        int daysLeft = (int) (diffMillis / (1000 * 60 * 60 * 24));
-
-        if (daysLeft < 0) daysLeft = 0;
-
-        tvDaysRemaining.setText(daysLeft + " روز مانده تا سفر");
+        PersianCalendar today = new PersianCalendar();
+        long diff = tripStartDate.getTimeInMillis() - today.getTimeInMillis();
+        int days = (int) (diff / (1000 * 60 * 60 * 24));
+        if (days < 0) days = 0;
+        tvDaysRemaining.setText(days + " روز مانده تا سفر");
     }
 
     private void saveNotes() {
-        String notes = etNotes.getText().toString();
-        prefs.edit().putString(prefNotesKey, notes).apply();
+        prefs.edit().putString(prefNotesKey, etNotes.getText().toString()).apply();
     }
 
     private void saveChecklist() {
-        // ساده‌ترین روش ذخیره در SharedPreferences به صورت رشته با فرمت json ساده (یا جداکننده)
-        // چون فقط متن و وضعیت داریم، می‌تونیم با جداکننده ذخیره کنیم
         StringBuilder sb = new StringBuilder();
         for (ChecklistItem item : checklistItems) {
-            // فرمت: متن||true/false
-            sb.append(item.text.replace("|", " ")).append("||").append(item.checked).append("##");
+            sb.append(item.text.replace("|", "")).append("||").append(item.checked).append("##");
         }
         prefs.edit().putString(prefChecklistKey, sb.toString()).apply();
     }
 
     private void loadChecklist() {
         String saved = prefs.getString(prefChecklistKey, "");
+        checklistItems.clear();
         if (!TextUtils.isEmpty(saved)) {
-            checklistItems.clear();
             String[] items = saved.split("##");
             for (String s : items) {
                 if (TextUtils.isEmpty(s)) continue;
@@ -182,12 +160,10 @@ public class TripCheckActivity extends AppCompatActivity {
                 }
             }
         } else {
-            // اگر چیزی ذخیره نشده بود، یک آیتم نمونه میذاریم (مثل همون چک‌باکس sampleItem در XML)
             checklistItems.add(new ChecklistItem("پاوربانک", false));
         }
     }
 
-    // مدل آیتم چک‌لیست
     static class ChecklistItem {
         String text;
         boolean checked;
@@ -198,9 +174,7 @@ public class TripCheckActivity extends AppCompatActivity {
         }
     }
 
-    // آداپتر RecyclerView
     class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
-
         List<ChecklistItem> items;
 
         ChecklistAdapter(List<ChecklistItem> items) {
@@ -210,8 +184,8 @@ public class TripCheckActivity extends AppCompatActivity {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull android.view.ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
-            return new ViewHolder(view);
+            CheckBox cb = new CheckBox(parent.getContext());
+            return new ViewHolder(cb);
         }
 
         @Override
@@ -219,25 +193,16 @@ public class TripCheckActivity extends AppCompatActivity {
             ChecklistItem item = items.get(position);
             holder.checkBox.setText(item.text);
             holder.checkBox.setChecked(item.checked);
-
-            // تغییر رنگ اگر تیک خورده باشد (خاکستری)
             holder.checkBox.setTextColor(item.checked ? Color.GRAY : Color.BLACK);
 
             holder.checkBox.setOnClickListener(v -> {
-                boolean isChecked = holder.checkBox.isChecked();
-                item.checked = isChecked;
-
-                // اگر تیک خورد، به انتهای لیست می‌فرستیم و خاکستری می‌کنیم
-                if (isChecked) {
-                    items.remove(position);
-                    items.add(item);
-                    notifyDataSetChanged();
-                } else {
-                    // اگر از تیک خارج شد به اول لیست میاریم
-                    items.remove(position);
-                    items.add(0, item);
-                    notifyDataSetChanged();
-                }
+                item.checked = holder.checkBox.isChecked();
+                items.remove(position);
+                if (item.checked)
+                    items.add(item); // ته لیست
+                else
+                    items.add(0, item); // سر لیست
+                notifyDataSetChanged();
             });
         }
 
@@ -251,7 +216,7 @@ public class TripCheckActivity extends AppCompatActivity {
 
             ViewHolder(@NonNull View itemView) {
                 super(itemView);
-                checkBox = (CheckBox) itemView.findViewById(android.R.id.text1);
+                checkBox = (CheckBox) itemView;
             }
         }
     }

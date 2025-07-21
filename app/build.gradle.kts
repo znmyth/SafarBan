@@ -69,9 +69,14 @@ dependencies {
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
+    implementation("com.mohamadamin:persianmaterialdatetimepicker:1.2.1")
+
+
+    implementation(project(":persianmaterialdatetimepicker"))
+
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    implementation("com.github.samanzamani.persian-date:PersianDate:0.8")
+
 }

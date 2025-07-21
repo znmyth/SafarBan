@@ -13,13 +13,13 @@ dependencyResolutionManagement {
         maven("https://maven.myket.ir")
         google()
         mavenCentral()
-        maven {
-            url = uri("https://jitpack.io")
-        }
+        maven ("https://jitpack.io")
+        jcenter()
     }
 }
 
 
 rootProject.name = "SafarBan"
 include(":app")
- 
+include(":sample")
+include(":persianmaterialdatetimepicker")
