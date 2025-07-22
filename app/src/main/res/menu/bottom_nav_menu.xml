@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_social"
+        android:icon="@drawable/ic_chat"
+        android:title="فضای مجازی" />
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="خانه" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/circle_background"
+        android:title="پروفایل" />
+</menu>

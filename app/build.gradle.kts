@@ -71,6 +71,7 @@ dependencies {
 
     implementation("com.mohamadamin:persianmaterialdatetimepicker:1.2.1")
 
+    implementation("com.google.firebase:firebase-database")
 
     implementation(project(":persianmaterialdatetimepicker"))
 
