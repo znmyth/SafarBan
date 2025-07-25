@@ -97,6 +97,9 @@
                 android:fontFamily="@font/vazirbold"
                 android:layout_marginTop="@dimen/_8sdp" />
 
+            <!-- دکمه بازگشت -->
+
+
             <!-- رفتن به ثبت‌نام -->
             <TextView
                 android:id="@+id/login_tvSignup"
@@ -108,6 +111,16 @@
                 android:textSize="@dimen/_10ssp"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:layout_gravity="center_horizontal" />
+
+            <Button
+                android:id="@+id/login_btnBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="وایسا ببینم، عه! اشتباه اومدم."
+                android:backgroundTint="#999999"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/vazirbold"
+                android:layout_marginTop="@dimen/_30sdp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

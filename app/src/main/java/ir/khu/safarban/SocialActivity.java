@@ -1,5 +1,6 @@
 package ir.khu.safarban;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +27,7 @@ public class SocialActivity extends AppCompatActivity {
     private ExperienceAdapter adapter;
     private List<Experience> experienceList = new ArrayList<>();
     private EditText etSearch;
+    private BottomNavigationView bottomNavigation;
 
     private DatabaseReference ref;
 
@@ -33,14 +36,19 @@ public class SocialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social);
 
+        // اتصال ویوها
         rvExperiences = findViewById(R.id.rvExperiences);
         etSearch = findViewById(R.id.etSearch);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         rvExperiences.setLayoutManager(new LinearLayoutManager(this));
 
+        // تنظیم نوار پایین
+        setupBottomNavigation();
+
+        // دریافت داده‌ها از Firebase
         ref = FirebaseDatabase.getInstance().getReference("experiences");
 
-        // خواندن داده‌ها از Firebase
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -59,11 +67,11 @@ public class SocialActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // در صورت خطا
+                // هندل خطا
             }
         });
 
-        // سرچ
+        // فیلتر کردن جستجو
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -84,5 +92,25 @@ public class SocialActivity extends AppCompatActivity {
 
         adapter = new ExperienceAdapter(filtered);
         rvExperiences.setAdapter(adapter);
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigation.setSelectedItemId(R.id.nav_social); // آیتم فعلی
+
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, ProfileActivity.class));
+                return true;
+            } else if (id == R.id.nav_social) {
+                return true; // در همین صفحه
+            }
+
+            return false;
+        });
     }
 }

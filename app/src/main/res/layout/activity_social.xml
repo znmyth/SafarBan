@@ -57,7 +57,18 @@
             android:clipToPadding="false"
             android:contentDescription="لیست تجربیات کاربران" />
 
-
     </LinearLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:background="#f5e0c5"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/selector_nav_icon"
+        app:itemTextColor="@color/selector_nav_icon"
+        app:labelVisibilityMode="unlabeled" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

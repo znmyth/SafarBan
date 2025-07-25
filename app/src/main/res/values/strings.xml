@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">SafarBan</string>
-    <string name="default_web_client_id">518714241554-7jird01m0v2uu030cf3q15pnd5bq6atc.apps.googleusercontent.com</string>
+    <string name="app_name" translatable="false">SafarBan</string>
 
 
 </resources>

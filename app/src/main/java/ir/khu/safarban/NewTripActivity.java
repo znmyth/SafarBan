@@ -1,6 +1,7 @@
 package ir.khu.safarban;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -23,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import saman.zamani.persiandate.PersianDate;
+import saman.zamani.persiandate.PersianDateFormat;
+
 public class NewTripActivity extends AppCompatActivity {
 
     private AutoCompleteTextView etDestination;
@@ -44,11 +48,9 @@ public class NewTripActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_trip);
 
-        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Find Views
         etDestination = findViewById(R.id.etDestination);
         etStartDate = findViewById(R.id.etStartDate);
         etEndDate = findViewById(R.id.etEndDate);
@@ -59,61 +61,61 @@ public class NewTripActivity extends AppCompatActivity {
         btnSaveTrip = findViewById(R.id.btnSaveTrip);
         btnAddCompanion = findViewById(R.id.btnAddCompanion);
 
-        // Setup DatePicker
-        etStartDate.setOnClickListener(v -> showDateDialog(etStartDate));
-        etEndDate.setOnClickListener(v -> showDateDialog(etEndDate));
+        etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+        etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
 
-        // Setup Spinners
-        ArrayAdapter<String> transportAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, transportOptions);
-        spinnerTransportType.setAdapter(transportAdapter);
+        spinnerTransportType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, transportOptions));
+        spinnerTripType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, tripTypes));
 
-        ArrayAdapter<String> tripTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, tripTypes);
-        spinnerTripType.setAdapter(tripTypeAdapter);
-
-        // Save trip
         btnSaveTrip.setOnClickListener(v -> saveTrip());
 
-        // Add Companion
-        btnAddCompanion.setOnClickListener(v -> {
-            EditText input = new EditText(this);
-            input.setHint("نام همسفر");
-
-            new AlertDialog.Builder(this)
-                    .setTitle("افزودن همسفر")
-                    .setView(input)
-                    .setPositiveButton("افزودن", (dialog, which) -> {
-                        String name = input.getText().toString().trim();
-                        if (!name.isEmpty()) {
-                            companions.add(name);
-                            Toast.makeText(this, "همسفر اضافه شد ✅", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton("انصراف", null)
-                    .show();
-        });
+        btnAddCompanion.setOnClickListener(v -> showAddCompanionDialog());
     }
 
-    private void showDateDialog(EditText editText) {
-        Calendar calendar = Calendar.getInstance();
+    private void showDatePicker(EditText targetEditText) {
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH);
+        int day = now.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePicker = new DatePickerDialog(
-                this,
-                (DatePicker view, int year, int month, int dayOfMonth) -> {
-                    String date = year + "/" + (month + 1) + "/" + dayOfMonth;
-                    editText.setText(date);
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
+        DatePickerDialog dpd = new DatePickerDialog(this, (DatePicker view, int y, int m, int d) -> {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.set(y, m, d);
 
-        datePicker.show();
+            PersianDate pdate = new PersianDate(selectedDate.getTimeInMillis());
+            PersianDateFormat pdformater = new PersianDateFormat("yyyy/MM/dd");
+
+            String persianDateStr = pdformater.format(pdate);
+            targetEditText.setText(persianDateStr);
+        }, year, month, day);
+
+        dpd.show();
+    }
+
+    private void showAddCompanionDialog() {
+        EditText input = new EditText(this);
+        input.setHint("نام همسفر");
+
+        new AlertDialog.Builder(this)
+                .setTitle("افزودن همسفر")
+                .setView(input)
+                .setPositiveButton("افزودن", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty() && !companions.contains(name)) {
+                        companions.add(name);
+                        Toast.makeText(this, "همسفر اضافه شد ✅", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "نام معتبر یا تکراری وارد شده", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("انصراف", null)
+                .show();
     }
 
     private void saveTrip() {
         String uid = auth.getUid();
         if (uid == null) {
-            Toast.makeText(this, "ابتدا وارد حساب کاربری شو!", Toast.LENGTH_SHORT).show();
+            showToast("ابتدا وارد حساب کاربری شو!");
             return;
         }
 
@@ -126,28 +128,13 @@ public class NewTripActivity extends AppCompatActivity {
         boolean notifyDayOf = cbAlarmDayOf.isChecked();
 
         if (destination.isEmpty() || startDate.isEmpty()) {
-            Toast.makeText(this, "مقصد و تاریخ رفت ضروری‌ان!", Toast.LENGTH_SHORT).show();
+            showToast("مقصد و تاریخ رفت ضروری‌ان!");
             return;
         }
 
-        // ✅ Check endDate is not before startDate
         if (!endDate.isEmpty()) {
-            try {
-                String[] startParts = startDate.split("/");
-                String[] endParts = endDate.split("/");
-
-                Calendar startCal = Calendar.getInstance();
-                startCal.set(Integer.parseInt(startParts[0]), Integer.parseInt(startParts[1]) - 1, Integer.parseInt(startParts[2]));
-
-                Calendar endCal = Calendar.getInstance();
-                endCal.set(Integer.parseInt(endParts[0]), Integer.parseInt(endParts[1]) - 1, Integer.parseInt(endParts[2]));
-
-                if (endCal.before(startCal)) {
-                    Toast.makeText(this, "تاریخ پایان نمی‌تونه قبل از شروع باشه!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "فرمت تاریخ معتبر نیست!", Toast.LENGTH_SHORT).show();
+            if (!isEndDateAfterOrEqualStartDate(startDate, endDate)) {
+                showToast("تاریخ پایان نمی‌تونه قبل از شروع باشه!");
                 return;
             }
         }
@@ -160,17 +147,45 @@ public class NewTripActivity extends AppCompatActivity {
         trip.put("tripType", tripType);
         trip.put("notifyBefore", notifyBefore);
         trip.put("notifyDayOf", notifyDayOf);
-        trip.put("companions", companions); // ✅ new
+        trip.put("companions", companions);
         trip.put("createdAt", System.currentTimeMillis());
 
         db.collection("users").document(uid).collection("trips")
                 .add(trip)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "سفر ذخیره شد! 🎉", Toast.LENGTH_SHORT).show();
-                    finish(); // go back
+                .addOnSuccessListener(doc -> {
+                    showToast("سفر ذخیره شد! 🎉");
+                    finish();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "خطا در ذخیره‌سازی 😢", Toast.LENGTH_SHORT).show();
+                    showToast("خطا در ذخیره‌سازی 😢");
                 });
+    }
+
+    private boolean isEndDateAfterOrEqualStartDate(String start, String end) {
+        try {
+            String[] s = start.split("/");
+            String[] e = end.split("/");
+
+            int sy = Integer.parseInt(s[0]);
+            int sm = Integer.parseInt(s[1]);
+            int sd = Integer.parseInt(s[2]);
+
+            int ey = Integer.parseInt(e[0]);
+            int em = Integer.parseInt(e[1]);
+            int ed = Integer.parseInt(e[2]);
+
+            if (ey < sy) return false;
+            if (ey == sy && em < sm) return false;
+            if (ey == sy && em == sm && ed < sd) return false;
+
+            return true;
+
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

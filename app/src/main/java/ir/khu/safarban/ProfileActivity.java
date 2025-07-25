@@ -11,10 +11,10 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,6 +29,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnLogin, btnSignup, btnLogout;
     private ImageView ivProfilePic;
     private LinearLayout layoutAuthButtons, layoutUserProfile;
+    private BottomNavigationView bottomNavigation;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firestore;
@@ -38,9 +39,12 @@ public class ProfileActivity extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     profileImageUri = uri;
-                    ivProfilePic.setImageURI(uri);
+                    // به جای setImageURI از Glide استفاده می‌کنیم تا تصویر دایره‌ای شود
+                    Glide.with(this)
+                            .load(profileImageUri)
+                            .circleCrop()
+                            .into(ivProfilePic);
 
-                    // ذخیره مسیر عکس در Firestore
                     FirebaseUser user = firebaseAuth.getCurrentUser();
                     if (user != null) {
                         String uid = user.getUid();
@@ -50,12 +54,8 @@ public class ProfileActivity extends AppCompatActivity {
                         data.put("imageUri", profileImageUri.toString());
 
                         userDoc.set(data)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "تصویر ذخیره شد", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "خطا در ذخیره تصویر", Toast.LENGTH_SHORT).show();
-                                });
+                                .addOnSuccessListener(aVoid -> Toast.makeText(this, "تصویر ذخیره شد", Toast.LENGTH_SHORT).show())
+                                .addOnFailureListener(e -> Toast.makeText(this, "خطا در ذخیره تصویر", Toast.LENGTH_SHORT).show());
                     }
                 }
             });
@@ -73,6 +73,22 @@ public class ProfileActivity extends AppCompatActivity {
         ivProfilePic = findViewById(R.id.ivProfilePic);
         layoutAuthButtons = findViewById(R.id.layoutAuthButtons);
         layoutUserProfile = findViewById(R.id.layoutUserProfile);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
+
+        bottomNavigation.setSelectedItemId(R.id.nav_profile);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_social) {
+                startActivity(new Intent(ProfileActivity.this, SocialActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                return true;
+            }
+            return false;
+        });
 
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -80,14 +96,11 @@ public class ProfileActivity extends AppCompatActivity {
         checkUserStatus();
 
         btnLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
-
         btnSignup.setOnClickListener(v -> startActivity(new Intent(this, SignupActivity.class)));
-
         ivProfilePic.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
-
         btnLogout.setOnClickListener(v -> {
             firebaseAuth.signOut();
-            Toast.makeText(this, "خروج انجام شد", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "عه! خارج شدی.", Toast.LENGTH_SHORT).show();
             checkUserStatus();
         });
     }
@@ -100,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity {
             layoutAuthButtons.setVisibility(LinearLayout.VISIBLE);
             layoutUserProfile.setVisibility(LinearLayout.GONE);
         } else {
-            tvWelcome.setText("خوش آمدی!");
+            tvWelcome.setText("یک سفرمان نشود ناصر خسرو!");
             layoutAuthButtons.setVisibility(LinearLayout.GONE);
             layoutUserProfile.setVisibility(LinearLayout.VISIBLE);
 
@@ -110,7 +123,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
             tvUsername.setText(username);
 
-            // لود کردن عکس از Firestore
             firestore.collection("users").document(user.getUid())
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
@@ -120,6 +132,13 @@ public class ProfileActivity extends AppCompatActivity {
                                 Glide.with(this)
                                         .load(Uri.parse(imageUri))
                                         .placeholder(R.drawable.ic_launcher_foreground)
+                                        .circleCrop() // دایره‌ای کردن عکس
+                                        .into(ivProfilePic);
+                            } else {
+                                // اگر عکس نداشت، تصویر پیش‌فرض دایره‌ای شود
+                                Glide.with(this)
+                                        .load(R.drawable.ic_launcher_foreground)
+                                        .circleCrop()
                                         .into(ivProfilePic);
                             }
                         }

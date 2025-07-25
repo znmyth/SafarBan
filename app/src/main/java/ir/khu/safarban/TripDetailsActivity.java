@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
+import saman.zamani.persiandate.PersianDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class TripDetailsActivity extends AppCompatActivity {
     String prefNotesKey = "trip_notes";
     String prefChecklistKey = "trip_checklist";
 
-    PersianCalendar tripStartDate, tripEndDate;
+    PersianDate tripStartDate, tripEndDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,16 +111,18 @@ public class TripDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private PersianCalendar parsePersianDate(String dateStr) {
+    private PersianDate parsePersianDate(String dateStr) {
         try {
             if (dateStr == null) return null;
             String[] parts = dateStr.split("/");
             int y = Integer.parseInt(parts[0]);
-            int m = Integer.parseInt(parts[1]) - 1; // PersianCalendar uses 0-based months
+            int m = Integer.parseInt(parts[1]);
             int d = Integer.parseInt(parts[2]);
-            PersianCalendar calendar = new PersianCalendar();
-            calendar.setPersianDate(y, m, d);
-            return calendar;
+            PersianDate pd = new PersianDate();
+            pd.setShYear(y);
+            pd.setShMonth(m);
+            pd.setShDay(d);
+            return pd;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -128,8 +130,8 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     private void updateDaysRemaining() {
-        PersianCalendar today = new PersianCalendar();
-        long diff = tripStartDate.getTimeInMillis() - today.getTimeInMillis();
+        PersianDate today = new PersianDate();
+        long diff = tripStartDate.getTime() - today.getTime();
         int days = (int) (diff / (1000 * 60 * 60 * 24));
         if (days < 0) days = 0;
         tvDaysRemaining.setText(days + " روز مانده تا سفر");

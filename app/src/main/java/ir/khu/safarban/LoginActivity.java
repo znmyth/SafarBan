@@ -19,7 +19,7 @@ import com.google.firebase.auth.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText login_etEmail, login_etPassword;
-    private Button login_btnLogin, login_btnGoogle;
+    private Button login_btnLogin, login_btnGoogle, login_btnBack;
     private TextView login_tvSignup, login_tvForgot;
 
     private FirebaseAuth firebaseAuth;
@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         login_etPassword = findViewById(R.id.login_etPassword);
         login_btnLogin = findViewById(R.id.login_btnLogin);
         login_btnGoogle = findViewById(R.id.login_btnGoogleLogin);
+        login_btnBack = findViewById(R.id.login_btnBack);
         login_tvSignup = findViewById(R.id.login_tvSignup);
         login_tvForgot = findViewById(R.id.login_tvForgotPassword);
 
@@ -83,6 +84,9 @@ public class LoginActivity extends AppCompatActivity {
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
 
+        // دکمه بازگشت
+        login_btnBack.setOnClickListener(v -> finish());
+
         // فراموشی رمز
         login_tvForgot.setOnClickListener(v ->
                 Toast.makeText(this, "فعلاً باید یادت بیاد :) ", Toast.LENGTH_SHORT).show()
@@ -128,8 +132,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToHome() {
-        // برو به صفحه اصلی یا هر جایی که بخوای
         startActivity(new Intent(this, MainActivity.class));
-        finish(); // اگه نخوای برگرده به صفحه لاگین
+        finish();
     }
 }

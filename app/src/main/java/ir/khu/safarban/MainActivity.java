@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
         fabAddTrip = findViewById(R.id.fabAddTrip);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
+        // 🔥 فعال کردن آیتم خانه به‌صورت پیش‌فرض
+        bottomNavigation.setSelectedItemId(R.id.nav_home);
+
         // کلیک روی دکمه افزودن سفر
         fabAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
