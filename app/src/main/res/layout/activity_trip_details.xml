@@ -28,17 +28,37 @@
                 android:padding="16dp"
                 android:layoutDirection="rtl">
 
-                <TextView
-                    android:id="@+id/tvTripTitle"
-                    android:layout_width="wrap_content"
+                <!-- عنوان + دکمه ویرایش -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="سفر اربعین"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#033a60"
-                    android:fontFamily="@font/vazirbold"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
 
+                    <TextView
+                        android:id="@+id/tvTripTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="سفر اربعین"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#033a60"
+                        android:fontFamily="@font/vazirbold" />
+
+                    <Button
+                        android:id="@+id/btnEditTrip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ویرایش اطلاعات"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:backgroundTint="#d17b00"
+                        android:fontFamily="@font/vazirmedium" />
+                </LinearLayout>
+
+                <!-- تاریخ -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,10 +76,11 @@
                         android:id="@+id/tvTripDates"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="تاریخ: ۲۰۲۵/۰۸/۱۰ تا ۲۰۲۵/۰۸/۱۵"
+                        android:text="تاریخ: ۱۴۰۳/۰۶/۱۵ تا ۱۴۰۳/۰۶/۲۰"
                         android:fontFamily="@font/vazirregular" />
                 </LinearLayout>
 
+                <!-- مقصد -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -81,6 +102,7 @@
                         android:fontFamily="@font/vazirmedium" />
                 </LinearLayout>
 
+                <!-- نوع سفر -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -102,11 +124,12 @@
                         android:fontFamily="@font/vazirregular" />
                 </LinearLayout>
 
+                <!-- وسیله سفر -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="3dp">
 
                     <ImageView
                         android:layout_width="20dp"
@@ -123,6 +146,28 @@
                         android:fontFamily="@font/vazirregular" />
                 </LinearLayout>
 
+                <!-- همسفر -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_companion"
+                        app:tint="#033a60"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvCompanion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="همسفر: علی"
+                        android:fontFamily="@font/vazirregular" />
+                </LinearLayout>
+
                 <!-- شمارش معکوس -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -131,9 +176,7 @@
                     android:orientation="horizontal"
                     android:padding="8dp"
                     android:background="#033a60"
-                    android:layoutDirection="rtl"
                     android:layout_marginTop="4dp"
-                    android:clipToPadding="false"
                     android:elevation="2dp">
 
                     <ImageView
@@ -150,7 +193,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="14sp"
                         android:fontFamily="@font/vazirmedium"
-                        android:layout_marginStart="8dp"/>
+                        android:layout_marginStart="8dp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -198,18 +241,15 @@
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:backgroundTint="#033a60"
-                android:fontFamily="@font/vazirmedium"/>
+                android:fontFamily="@font/vazirmedium" />
         </LinearLayout>
-
-        <!-- چک‌لیست -->
-        <CheckBox
-            android:id="@+id/sampleItem"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvUncheckedItems"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="پاوربانک"
-            android:fontFamily="@font/vazirregular"
             android:textSize="16sp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="#000000"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerChecklist"
@@ -218,7 +258,7 @@
             android:nestedScrollingEnabled="false"
             android:layout_marginBottom="24dp" />
 
-        <!-- بخش یادداشت -->
+        <!-- یادداشت -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -228,42 +268,43 @@
             android:fontFamily="@font/vazirmedium"
             android:layout_marginBottom="8dp" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/etNotes"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
+            android:layout_height="120dp"
+            android:hint="یادداشت‌هات رو اینجا بنویس..."
+            android:gravity="top|start"
+            android:padding="8dp"
+            android:fontFamily="@font/vazirregular"
+            android:inputType="textMultiLine"
+            android:maxLines="5"
+            android:layout_marginBottom="8dp" />
 
-
-
-            <EditText
-                android:id="@+id/etNotes"
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
-                android:hint="یادداشت‌هات رو اینجا بنویس..."
-                android:gravity="top|start"
-                android:padding="8dp"
-                android:fontFamily="@font/vazirregular"
-                android:inputType="textMultiLine"
-                android:maxLines="5" />
-
-
-        </LinearLayout>
-
-
+        <!-- دکمه ذخیره -->
         <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ثبت"
+            android:text="شروع سفر!"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:backgroundTint="#033a60"
             android:fontFamily="@font/vazirmedium"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="10dp" />
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="نه، اصلا نمیخوام تغییری بدم:)"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:backgroundTint="#9E9E9E"
+            android:fontFamily="@font/vazirmedium"
             android:layout_marginBottom="32dp" />
+
+
+
 
 
     </LinearLayout>

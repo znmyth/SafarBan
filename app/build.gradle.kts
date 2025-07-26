@@ -29,25 +29,33 @@ android {
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
 
 
 
+
+
+
+
 dependencies {
-    // Layout
+    // اندازه‌گذاری پاسخگو
     implementation("com.intuit.sdp:sdp-android:1.1.0")
     implementation("com.intuit.ssp:ssp-android:1.1.0")
 
-    // AndroidX
+    // AndroidX و متریال
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    // Firebase (using BOM)
+    // Firebase (با BOM)
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
@@ -57,28 +65,20 @@ dependencies {
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    // Credential Manager (اختیاری – فقط اگر استفاده می‌کنی)
+    // Identity (اختیاری)
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    //implementation("com.github.aliab:Persian-Date-Picker-Dialog:1.8")
-    //implementation("com.github.samanzamani.persiandate:PersianDate:0.8")
-
-    //implementation("com.github.aliab:PersianDate:0.8")
-
+    // Persian Date Picker زیبا
     implementation("com.github.aliab:Persian-Date-Picker-Dialog:1.8.0")
-    //implementation("com.github.aliab:Persian-Date-Picker-Dialog:1.7.1")
+    implementation("com.github.samanzamani:PersianDate:1.3.4")
 
-    //implementation("com.github.samanzamani.persiandate:PersianDate:0.8")
-    implementation ("com.github.samanzamani:PersianDate:1.3.4")
-
-
-    // Glide
+    // Glide برای لود تصاویر
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    // Testing
+    // تست
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

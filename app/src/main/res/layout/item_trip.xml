@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:elevation="6dp"
+    app:cardCornerRadius="12dp">
+
+    <LinearLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="right"
+        android:background="@drawable/spinner_background">
+
+        <!-- Title Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right|center_vertical">
+
+            <TextView
+                android:id="@+id/tvTripTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="سفر اربعین"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:gravity="right" />
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="ویرایش سفر"
+                android:src="@android:drawable/ic_menu_edit"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="8dp"
+            android:background="#767676" />
+
+        <!-- Info Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right|center_vertical">
+
+            <TextView
+                android:id="@+id/tvTripRemaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 روز مانده تا سفر"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/ic_lock_idle_alarm"
+                android:layout_marginStart="4dp"
+                app:tint="#7C7C7C" />
+
+            <TextView
+                android:id="@+id/tvUncheckedItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 آیتم چک‌نشده"
+                android:textSize="14sp"
+                android:textColor="#A0A0A0"
+                android:layout_marginStart="16dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_ttick"
+                android:layout_marginStart="4dp"
+                app:tint="#7C7C7C" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
