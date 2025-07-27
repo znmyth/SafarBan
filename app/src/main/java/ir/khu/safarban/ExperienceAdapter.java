@@ -1,9 +1,9 @@
 package ir.khu.safarban;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,53 +11,98 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.ExperienceViewHolder> {
+public class ExperienceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Experience> experienceList;
+    private static final int TYPE_ADD_NEW = 0;
+    private static final int TYPE_EXPERIENCE = 1;
 
-    public ExperienceAdapter(List<Experience> experienceList) {
-        this.experienceList = experienceList;
-    }
+    private List<Experience> experiences;
+    private Context context;
 
-    @NonNull
-    @Override
-    public ExperienceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_experience, parent, false);
-        return new ExperienceViewHolder(view);
+    public ExperienceAdapter(Context context, List<Experience> experiences) {
+        this.context = context;
+        this.experiences = experiences;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ExperienceViewHolder holder, int position) {
-        Experience experience = experienceList.get(position);
-        holder.tvTitle.setText(experience.getTitle());
-        holder.tvChecklist.setText("✅ " + experience.getChecklist());
-        holder.tvComments.setText("💬 " + experience.getComments());
-
-        holder.itemView.setOnClickListener(v -> {
-            if (holder.detailsLayout.getVisibility() == View.GONE) {
-                holder.detailsLayout.setVisibility(View.VISIBLE);
-            } else {
-                holder.detailsLayout.setVisibility(View.GONE);
-            }
-        });
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_ADD_NEW;
+        } else {
+            return TYPE_EXPERIENCE;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return experienceList.size();
+        return experiences.size() + 1; // +1 برای کارت ثابت "ثبت تجربه من"
     }
 
-    static class ExperienceViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvChecklist, tvComments;
-        LinearLayout detailsLayout;
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ADD_NEW) {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_add_experience, parent, false);
+            return new AddExperienceViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_experience, parent, false);
+            return new ExperienceViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof AddExperienceViewHolder) {
+            ((AddExperienceViewHolder) holder).bind();
+        } else if (holder instanceof ExperienceViewHolder) {
+            Experience experience = experiences.get(position - 1); // -1 به خاطر کارت ثابت
+            ((ExperienceViewHolder) holder).bind(experience);
+        }
+    }
+
+    // ViewHolder برای کارت "ثبت تجربه من"
+    class AddExperienceViewHolder extends RecyclerView.ViewHolder {
+        TextView tvAddNew;
+
+        public AddExperienceViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvAddNew = itemView.findViewById(R.id.tvAddNewExperience);
+        }
+
+        public void bind() {
+            tvAddNew.setText("ثبت تجربه من +");
+            itemView.setOnClickListener(v -> {
+                if (onAddExperienceClickListener != null) {
+                    onAddExperienceClickListener.onAddExperienceClick();
+                }
+            });
+        }
+    }
+
+    // ViewHolder برای کارت تجربه‌های عادی
+    class ExperienceViewHolder extends RecyclerView.ViewHolder {
+        TextView tvTitle;
 
         public ExperienceViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvChecklist = itemView.findViewById(R.id.tvChecklist);
-            tvComments = itemView.findViewById(R.id.tvComments);
-            detailsLayout = itemView.findViewById(R.id.detailsLayout);
+            // اگر ویوهای بیشتری داری، اینجا findViewById کن
         }
+
+        public void bind(Experience experience) {
+            tvTitle.setText(experience.getTitle());
+            // اینجا می‌تونی باز و بسته شدن کارت، لایک، کامنت و ... رو اضافه کنی
+        }
+    }
+
+    // اینترفیس کلیک روی کارت "ثبت تجربه من"
+    public interface OnAddExperienceClickListener {
+        void onAddExperienceClick();
+    }
+
+    private OnAddExperienceClickListener onAddExperienceClickListener;
+
+    public void setOnAddExperienceClickListener(OnAddExperienceClickListener listener) {
+        this.onAddExperienceClickListener = listener;
     }
 }

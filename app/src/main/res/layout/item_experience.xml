@@ -1,50 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:layout_marginTop="8dp"
-    android:elevation="4dp"
-    android:padding="12dp"
-    android:foreground="?attr/selectableItemBackground">
+    app:cardCornerRadius="12dp"
+    android:layout_marginVertical="8dp"
+    android:elevation="6dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:background="@android:color/white"
+    android:padding="16dp">
 
     <LinearLayout
+        android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- عنوان -->
+        <!-- عنوان تجربه -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="عنوان تجربه"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#033a60" />
+            android:textColor="#2c3e50" />
 
-        <!-- بخش قابل باز و بسته شدن -->
+        <!-- بخش باز و بسته شونده -->
         <LinearLayout
             android:id="@+id/detailsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:paddingTop="8dp">
+            android:paddingTop="12dp">
 
+            <!-- چک لیست نمونه -->
             <TextView
                 android:id="@+id/tvChecklist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="✅ چک لیست"
-                android:textColor="#555" />
+                android:text="✅ چک لیست سفر"
+                android:textSize="16sp"
+                android:textColor="#34495e"
+                android:paddingBottom="8dp" />
 
+            <!-- بخش نظرات -->
             <TextView
                 android:id="@+id/tvComments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="💬 نظرات"
-                android:textColor="#555" />
+                android:text="💬 نظرات کاربران"
+                android:textSize="16sp"
+                android:textColor="#34495e" />
+
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>
