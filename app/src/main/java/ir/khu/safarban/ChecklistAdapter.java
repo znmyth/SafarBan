@@ -27,7 +27,6 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
         this.checklistItems = items;
     }
 
-    // اینترفیس برای اطلاع از تغییر وضعیت چک‌باکس‌ها
     public interface OnCheckChangedListener {
         void onCheckChanged(int uncheckedCount);
     }
@@ -46,56 +45,19 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
     @Override
     public void onBindViewHolder(@NonNull ChecklistViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ChecklistItem item = checklistItems.get(position);
-        holder.checkBox.setText(item.getText());
-        holder.checkBox.setChecked(item.isChecked());
-        holder.editText.setText(item.getText());
-        holder.editText.setVisibility(View.GONE);
-        holder.checkBox.setVisibility(View.VISIBLE);
+        holder.bind(item);
 
-        // هندل کردن تیک زدن
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            item.setChecked(isChecked);
-            if (checkChangedListener != null) {
-                checkChangedListener.onCheckChanged(getUncheckedItemCount());
-            }
-        });
-
-        // حذف آیتم
+        // دکمه حذف
         holder.btnDelete.setOnClickListener(v -> {
-            checklistItems.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, checklistItems.size());
+            checklistItems.remove(holder.getAdapterPosition());
+            notifyItemRemoved(holder.getAdapterPosition());
             if (checkChangedListener != null) {
                 checkChangedListener.onCheckChanged(getUncheckedItemCount());
             }
         });
 
-        // ویرایش آیتم
-        holder.btnEdit.setOnClickListener(v -> {
-            if (holder.editText.getVisibility() == View.GONE) {
-                holder.editText.setText(item.getText());
-                holder.editText.setVisibility(View.VISIBLE);
-                holder.checkBox.setVisibility(View.GONE);
-                holder.editText.requestFocus();
-            } else {
-                String newText = holder.editText.getText().toString();
-                item.setText(newText);
-                holder.checkBox.setText(newText);
-                holder.editText.setVisibility(View.GONE);
-                holder.checkBox.setVisibility(View.VISIBLE);
-            }
-        });
-
-        // تایپ داخل EditText
-        holder.editText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                item.setText(s.toString());
-            }
-        });
+        // دکمه ویرایش
+        holder.btnEdit.setOnClickListener(v -> holder.toggleEditMode());
     }
 
     private int getUncheckedItemCount() {
@@ -111,7 +73,7 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
         return checklistItems.size();
     }
 
-    static class ChecklistViewHolder extends RecyclerView.ViewHolder {
+    class ChecklistViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;
         EditText editText;
         ImageButton btnDelete, btnEdit;
@@ -123,22 +85,49 @@ public class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.Chec
             btnDelete = itemView.findViewById(R.id.btnDelete);
             btnEdit = itemView.findViewById(R.id.btnEdit);
         }
-    }
 
-    // کلاس آیتم چک‌لیست
-    public static class ChecklistItem {
-        private String text;
-        private boolean isChecked;
+        void bind(ChecklistItem item) {
+            // جلوگیری از چرخه ناخواسته
+            checkBox.setOnCheckedChangeListener(null);
 
-        public ChecklistItem(String text) {
-            this.text = text;
-            this.isChecked = false;
+            // مقداردهی اولیه
+            checkBox.setText(item.getText());
+            checkBox.setChecked(item.isChecked());
+            editText.setText(item.getText());
+
+            // نمایش حالت معمولی
+            editText.setVisibility(View.GONE);
+            checkBox.setVisibility(View.VISIBLE);
+
+            // تغییر تیک
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                item.setChecked(isChecked);
+                if (checkChangedListener != null) {
+                    checkChangedListener.onCheckChanged(getUncheckedItemCount());
+                }
+            });
+
+            // تغییر متن
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void afterTextChanged(Editable s) {}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    item.setText(s.toString());
+                    checkBox.setText(s.toString());
+                }
+            });
         }
 
-        public String getText() { return text; }
-        public void setText(String text) { this.text = text; }
-
-        public boolean isChecked() { return isChecked; }
-        public void setChecked(boolean checked) { isChecked = checked; }
+        void toggleEditMode() {
+            if (editText.getVisibility() == View.GONE) {
+                editText.setVisibility(View.VISIBLE);
+                checkBox.setVisibility(View.GONE);
+                editText.requestFocus();
+            } else {
+                editText.setVisibility(View.GONE);
+                checkBox.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

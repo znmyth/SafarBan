@@ -2,9 +2,7 @@ package ir.khu.safarban;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +22,8 @@ import java.util.List;
 public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> {
 
     private Context context;
-    private List<Trip> trips;           // لیست قابل نمایش (فیلتر شده)
-    private List<Trip> fullTripsList;   // لیست کامل همه سفرها (بدون فیلتر)
+    private List<Trip> trips;         // لیست قابل نمایش (فیلتر شده)
+    private List<Trip> fullTripsList; // لیست کامل همه سفرها (بدون فیلتر)
 
     public TripAdapter(Context context, List<Trip> trips) {
         this.context = context;
@@ -44,14 +42,9 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
         Trip trip = trips.get(position);
 
-        // عنوان سفر
         holder.tvTripTitle.setText(trip.getDestination() != null ? trip.getDestination() : "بدون عنوان");
+        holder.tvUncheckedItems.setText("آیتم‌های باقی‌مانده: " + trip.getUncheckedCount());
 
-        // خواندن تعداد آیتم‌های چک نشده از SharedPreferences
-        int uncheckedCount = getUncheckedCountFromPrefs(trip.getId());
-        holder.tvUncheckedItems.setText("آیتم‌های باقی‌مانده: " + uncheckedCount);
-
-        // محاسبه روزهای باقی‌مانده
         String startDateStr = trip.getStartDate();
         String daysRemainingText;
         boolean isPast = false;
@@ -72,7 +65,6 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
         holder.tvTripRemaining.setText(daysRemainingText);
 
-        // رنگ کارت بسته به گذشته بودن سفر
         if (isPast) {
             holder.cardView.setCardBackgroundColor(Color.LTGRAY);
             holder.tvTripTitle.setTextColor(Color.DKGRAY);
@@ -85,14 +77,12 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             holder.tvTripRemaining.setTextColor(Color.GRAY);
         }
 
-        // کلیک روی کارت برای باز کردن جزئیات سفر
         holder.cardView.setOnClickListener(v -> {
             Intent intent = new Intent(context, TripDetailsActivity.class);
             intent.putExtra("trip_id", trip.getId());
             context.startActivity(intent);
         });
 
-        // دکمه ویرایش (فعلا مخفی)
         holder.btnEdit.setVisibility(View.GONE);
     }
 
@@ -101,37 +91,6 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         return trips.size();
     }
 
-    // ✅ متد حذف آیتم از لیست
-    public void removeTripAt(int position) {
-        if (position >= 0 && position < trips.size()) {
-            trips.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    // ✅ متد دریافت سفر خاص
-    public Trip getTripAt(int position) {
-        if (position >= 0 && position < trips.size()) {
-            return trips.get(position);
-        }
-        return null;
-    }
-
-    // ✅ متد بازگردانی آیتم (Undo)
-    public void restoreTrip(Trip trip, int position) {
-        if (position >= 0 && position <= trips.size() && trip != null) {
-            trips.add(position, trip);
-            notifyItemInserted(position);
-        }
-    }
-
-    // متد برای خواندن تعداد آیتم‌های چک نشده از SharedPreferences
-    private int getUncheckedCountFromPrefs(String tripId) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getInt("unchecked_count_" + tripId, 0);
-    }
-
-    // محاسبه روزهای باقی‌مانده از تاریخ شروع سفر
     private int calculateDaysRemaining(String dateStr) {
         try {
             String[] parts = dateStr.split("/");
@@ -155,7 +114,32 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         }
     }
 
-    // متد جدید برای فیلتر کردن سفرها بر اساس متن جستجو
+    // -------------------- متدهای SwipeToDeleteCallback --------------------
+    public Trip getTripAt(int position) {
+        if (position >= 0 && position < trips.size()) {
+            return trips.get(position);
+        }
+        return null;
+    }
+
+    public void removeTripAt(int position) {
+        if (position >= 0 && position < trips.size()) {
+            Trip trip = trips.get(position);
+            trips.remove(position);
+            fullTripsList.remove(trip);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public void restoreTrip(Trip trip, int position) {
+        if (trip != null) {
+            trips.add(position, trip);
+            fullTripsList.add(trip);
+            notifyItemInserted(position);
+        }
+    }
+
+    // -------------------- فیلتر و آپدیت --------------------
     public void filterTrips(String query) {
         trips.clear();
         if (TextUtils.isEmpty(query)) {
@@ -171,7 +155,6 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         notifyDataSetChanged();
     }
 
-    // متد جدید برای به روزرسانی کامل لیست سفرها
     public void updateTrips(List<Trip> newTrips) {
         fullTripsList.clear();
         fullTripsList.addAll(newTrips);
@@ -182,7 +165,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         notifyDataSetChanged();
     }
 
-    // ویو هولدر
+    // -------------------- ویو هولدر --------------------
     static class TripViewHolder extends RecyclerView.ViewHolder {
         TextView tvTripTitle, tvTripRemaining, tvUncheckedItems;
         CardView cardView;

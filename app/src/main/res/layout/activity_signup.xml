@@ -55,38 +55,14 @@
                 android:id="@+id/tvEmailHint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="یه ایمیل الکی بزن، رد شیم بریم."
+                android:text="یه ایمیل درست بزن بعدا رمزت یادت رفت، نشینی گریه کنی!"
                 android:textSize="@dimen/_9ssp"
                 android:textColor="#033A60"
                 android:fontFamily="@font/vazirregular"
                 android:layout_marginTop="@dimen/_1sdp"
                 android:gravity="right" />
 
-            <!-- نام کاربری -->
-            <EditText
-                android:id="@+id/etUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:backgroundTint="#033a60"
-                android:fontFamily="@font/vazirmedium"
-                android:gravity="right"
-                android:hint="نام کاربری"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:textColorHint="#4E4E4E"
-                android:textDirection="rtl" />
 
-            <TextView
-                android:id="@+id/tvUsernameHint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="یه اسم خفن انتخاب کن، قراره باهاش بری سفر!"
-                android:textSize="@dimen/_9ssp"
-                android:textColor="#033A60"
-                android:fontFamily="@font/vazirregular"
-                android:layout_marginTop="@dimen/_1sdp"
-                android:gravity="right" />
 
             <!-- رمز عبور -->
             <EditText

@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText etEmail, etUsername, etPassword, etConfirmPassword;
+    private EditText etEmail, etPassword, etConfirmPassword;
     private Button btnSignup, btnBack;
     private FirebaseAuth mAuth;
 
@@ -24,7 +24,6 @@ public class SignupActivity extends AppCompatActivity {
 
         // اتصال ویوها
         etEmail = findViewById(R.id.etEmail);
-        etUsername = findViewById(R.id.etUsername); // فعلاً فقط برای UI است
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnSignup = findViewById(R.id.btnSignup);
@@ -36,12 +35,11 @@ public class SignupActivity extends AppCompatActivity {
         // دکمه ثبت نام
         btnSignup.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
-            String username = etUsername.getText().toString().trim(); // فعلاً استفاده نمی‌کنیم
             String password = etPassword.getText().toString();
             String confirmPassword = etConfirmPassword.getText().toString();
 
             // بررسی پر بودن فیلدها
-            if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 Toast.makeText(this, "لطفاً همه فیلدها را پر کن", Toast.LENGTH_SHORT).show();
                 return;
             }

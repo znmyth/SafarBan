@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient"
+    android:fillViewport="true"
     android:padding="16dp">
 
     <LinearLayout
@@ -195,7 +197,6 @@
                         android:fontFamily="@font/vazirmedium"
                         android:layout_marginStart="8dp" />
                 </LinearLayout>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -243,6 +244,7 @@
                 android:backgroundTint="#033a60"
                 android:fontFamily="@font/vazirmedium" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/tvUncheckedItems"
             android:layout_width="wrap_content"
@@ -251,12 +253,14 @@
             android:layout_marginTop="8dp"
             android:textColor="#000000"/>
 
+        <!-- RecyclerView چک‌لیست -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerChecklist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
-            android:layout_marginBottom="24dp" />
+            android:scrollbars="vertical"
+            android:layout_marginBottom="16dp"/>
 
         <!-- یادداشت -->
         <TextView
@@ -271,16 +275,18 @@
         <EditText
             android:id="@+id/etNotes"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="200dp"
             android:hint="یادداشت‌هات رو اینجا بنویس..."
             android:gravity="top|start"
             android:padding="8dp"
             android:fontFamily="@font/vazirregular"
             android:inputType="textMultiLine"
-            android:maxLines="5"
-            android:layout_marginBottom="8dp" />
+            android:scrollbars="vertical"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:layout_marginBottom="16dp" />
 
-        <!-- دکمه ذخیره -->
+        <!-- دکمه‌ها -->
         <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
@@ -290,8 +296,8 @@
             android:textSize="16sp"
             android:backgroundTint="#033a60"
             android:fontFamily="@font/vazirmedium"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="10dp" />
+
         <Button
             android:id="@+id/btnBack"
             android:layout_width="match_parent"
@@ -303,9 +309,5 @@
             android:fontFamily="@font/vazirmedium"
             android:layout_marginBottom="32dp" />
 
-
-
-
-
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

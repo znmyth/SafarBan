@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "518714241554-pt2b235sncn471qfu6p92c0p0kt12u2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.khu.safarban",
+            "certificate_hash": "36da28ce027a88bae1f790d938a17cd44ca4a664"
+          }
+        },
+        {
           "client_id": "518714241554-5g1maanp0nv25lpfcg64dgqf41etb0bn.apps.googleusercontent.com",
           "client_type": 3
         }

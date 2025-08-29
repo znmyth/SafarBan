@@ -3,6 +3,7 @@ package ir.khu.safarban;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.View;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -45,24 +46,30 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         int position = viewHolder.getAdapterPosition();
         Trip trip = adapter.getTripAt(position);
 
-        // حذف از لیست لوکال و نوتیفای
+        // حذف موقت از UI
         adapter.removeTripAt(position);
 
-        // نمایش Snackbar برای Undo
+        // اسنک‌بار برای Undo
         Snackbar snackbar = Snackbar.make(recyclerView, "سفر حذف شد", Snackbar.LENGTH_LONG);
         snackbar.setAction("بازگردانی", v -> {
             adapter.restoreTrip(trip, position);
         });
-        snackbar.show();
 
-        // حذف از Firestore بعد از تایید کاربر (بعد از Snackbar)
-        // در اینجا برای سادگی، حذف Firestore را با تأخیر انجام نمی‌دهیم
-        // اگر می‌خواهید حذف Firestore را با تأخیر انجام دهید، می‌توانید از Handler استفاده کنید.
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore.getInstance()
-                .collection("users").document(userId)
-                .collection("trips").document(trip.getId())
-                .delete();
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                    // یعنی کاربر Undo نزده → حذف از Firestore
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    FirebaseFirestore.getInstance()
+                            .collection("users").document(userId)
+                            .collection("trips").document(trip.getId())
+                            .delete();
+                }
+            }
+        });
+
+        snackbar.show();
     }
 
     @Override

@@ -5,15 +5,18 @@ import java.util.List;
 public class Trip {
     private String id;
     private String destination;
-    private String startDate;  // فرمت مثلا "1404/05/10"
+    private String startDate;  // مثل "1404/05/10"
     private String endDate;
-    private List<String> checklist;  // چک‌لیست سفر
+
+    // قبلاً: List<String>  ❌
+    // الان: List<ChecklistItem> ✅
+    private List<ChecklistItem> checklist;
 
     public Trip() {
-        // سازنده پیش‌فرض لازم برای Firebase Firestore
+        // سازنده پیش‌فرض برای Firestore
     }
 
-    public Trip(String id, String destination, String startDate, String endDate, List<String> checklist) {
+    public Trip(String id, String destination, String startDate, String endDate, List<ChecklistItem> checklist) {
         this.id = id;
         this.destination = destination;
         this.startDate = startDate;
@@ -21,8 +24,7 @@ public class Trip {
         this.checklist = checklist;
     }
 
-    // --- Getters and Setters ---
-
+    // --- Getters / Setters ---
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -35,18 +37,25 @@ public class Trip {
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
 
-    public List<String> getChecklist() { return checklist; }
-    public void setChecklist(List<String> checklist) { this.checklist = checklist; }
+    public List<ChecklistItem> getChecklist() { return checklist; }
+    public void setChecklist(List<ChecklistItem> checklist) { this.checklist = checklist; }
 
-    // متدهای اضافی برای سازگاری با Adapter و کدهای دیگر:
+    // برای سازگاری با کدهای قبلی:
+    // برای سازگاری با کدهای قبلی:
+    public String getTitle() { return destination; }
+    public String getDate() { return startDate; }
 
-    // این متد بجای getTitle صدا زده می‌شود، عنوان سفر می‌شود مقصد
-    public String getTitle() {
-        return destination;
-    }
+    // تعداد آیتم‌های تیک‌نخورده
+    public int getUncheckedCount() {
+        if (checklist == null) return 0;
 
-    // این متد بجای getDate صدا زده می‌شود، تاریخ شروع سفر می‌شود
-    public String getDate() {
-        return startDate;
+        int count = 0;
+        for (ChecklistItem item : checklist) {
+            if (item != null && !item.isChecked()) {
+                count++;
+            }
+        }
+        return count;
     }
 }
+

@@ -343,24 +343,37 @@ public class NewTripActivity extends AppCompatActivity {
             gregorianCalendar.set(
                     persianCalendar.get(Calendar.YEAR),
                     persianCalendar.get(Calendar.MONTH),
-                    persianCalendar.get(Calendar.DAY_OF_MONTH),
-                    22, 43, 0);
-            gregorianCalendar.set(Calendar.MILLISECOND, 0);
+                    persianCalendar.get(Calendar.DAY_OF_MONTH)
+            );
 
+            // نوتیف روز قبل سفر (ساعت ۱۰ شب)
             if (dayBefore) {
                 Calendar before = (Calendar) gregorianCalendar.clone();
                 before.add(Calendar.DAY_OF_MONTH, -1);
+                before.set(Calendar.HOUR_OF_DAY, 22);
+                before.set(Calendar.MINUTE, 0);
+                before.set(Calendar.SECOND, 0);
+                before.set(Calendar.MILLISECOND, 0);
+
                 setAlarm(before, "فردا به " + destination + " سفر داری! 🎒");
             }
 
+            // نوتیف روز سفر (ساعت ۸ صبح)
             if (dayOf) {
-                setAlarm(gregorianCalendar, "امروز راهی " + destination + " هستی! 🚀");
+                Calendar dayOfCal = (Calendar) gregorianCalendar.clone();
+                dayOfCal.set(Calendar.HOUR_OF_DAY, 8);
+                dayOfCal.set(Calendar.MINUTE, 0);
+                dayOfCal.set(Calendar.SECOND, 0);
+                dayOfCal.set(Calendar.MILLISECOND, 0);
+
+                setAlarm(dayOfCal, "امروز راهی " + destination + " هستی! 🚀");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private void setAlarm(Calendar calendar, String message) {
         try {

@@ -1,16 +1,9 @@
 package ir.khu.safarban;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Base64;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,18 +11,24 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import saman.zamani.persiandate.PersianDate;
 
@@ -39,28 +38,25 @@ public class TripDetailsActivity extends AppCompatActivity {
 
     TextView tvTripTitle, tvTripDates, tvTripDestination, tvTripType, tvTransportType, tvDaysRemaining;
     EditText etNewItem, etNotes;
-    Button btnAddItem, btnSave, btnEdit, btnBack;
+    Button btnAddItem, btnSave, btnEdit, btnBack, btnStartTrip;
     RecyclerView recyclerChecklist;
 
     ChecklistAdapter adapter;
     List<ChecklistItem> checklistItems;
 
-    SharedPreferences prefs;
-
-    PersianDate tripStartDate, tripEndDate;
-
-    TextView tvCompanion;
-    TextView tvUncheckedItems;
-
     FirebaseFirestore db;
     String tripId, userId;
 
+    PersianDate tripStartDate, tripEndDate;
+
+    TextView tvCompanion, tvUncheckedItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
 
+        // init views
         tvTripTitle = findViewById(R.id.tvTripTitle);
         tvTripDates = findViewById(R.id.tvTripDates);
         tvTripDestination = findViewById(R.id.tvTripDestination);
@@ -68,15 +64,18 @@ public class TripDetailsActivity extends AppCompatActivity {
         tvTransportType = findViewById(R.id.tvTransportType);
         tvDaysRemaining = findViewById(R.id.tvDaysRemaining);
 
-        btnEdit = findViewById(R.id.btnEditTrip);
         etNewItem = findViewById(R.id.etNewItem);
         etNotes = findViewById(R.id.etNotes);
+
         btnAddItem = findViewById(R.id.btnAddItem);
         btnSave = findViewById(R.id.btnSave);
-        btnBack = findViewById(R.id.btnBack);  // اینجا دکمه Back رو میگیریم
+        btnEdit = findViewById(R.id.btnEditTrip);
+        btnBack = findViewById(R.id.btnBack);
+        btnStartTrip = findViewById(R.id.btnSave); // دکمه جدید
 
         tvCompanion = findViewById(R.id.tvCompanion);
         tvUncheckedItems = findViewById(R.id.tvUncheckedItems);
+
         recyclerChecklist = findViewById(R.id.recyclerChecklist);
         recyclerChecklist.setLayoutManager(new LinearLayoutManager(this));
 
@@ -85,25 +84,21 @@ public class TripDetailsActivity extends AppCompatActivity {
         recyclerChecklist.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser() != null ?
+                FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
 
-        Intent intent = getIntent();
-        tripId = intent.getStringExtra("trip_id");
-        userId = (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() != null)
-                ? com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
-
+        tripId = getIntent().getStringExtra("trip_id");
         if (tripId == null || userId == null) {
             Toast.makeText(this, "شناسه سفر یا کاربر یافت نشد!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        prefs = getSharedPreferences("trip_data_" + tripId, Context.MODE_PRIVATE);
-
-        listenTripDataChanges();
+        loadTripData();
         loadChecklist();
         loadNotes();
 
-        updateUncheckedItemsCount();
+        adapter.setOnCheckChangedListener(this::updateUncheckedItemsCount);
 
         btnAddItem.setOnClickListener(v -> {
             String newItemText = etNewItem.getText().toString().trim();
@@ -118,18 +113,8 @@ public class TripDetailsActivity extends AppCompatActivity {
             }
         });
 
-        btnSave.setOnClickListener(v -> {
-            saveNotes();
-            saveChecklist();
-            Toast.makeText(this, "اطلاعات ذخیره شد", Toast.LENGTH_SHORT).show();
-
-            Intent mainIntent = new Intent(this, MainActivity.class);
-            mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(mainIntent);
-            finish();
-        });
-
-        adapter.setOnCheckChangedListener(this::updateUncheckedItemsCount);
+        btnSave.setOnClickListener(v -> saveAndReturnHome());
+        btnStartTrip.setOnClickListener(v -> saveAndReturnHome());
 
         btnEdit.setOnClickListener(v -> {
             Intent editIntent = new Intent(this, NewTripActivity.class);
@@ -137,18 +122,19 @@ public class TripDetailsActivity extends AppCompatActivity {
             startActivityForResult(editIntent, REQUEST_EDIT_TRIP);
         });
 
-        btnBack.setOnClickListener(v -> {
-            finish();
-        });
+        btnBack.setOnClickListener(v -> finish());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_EDIT_TRIP && resultCode == RESULT_OK) {
-            listenTripDataChanges();
-            Toast.makeText(this, "اطلاعات با موفقیت بروز شد", Toast.LENGTH_SHORT).show();
-        }
+    private void saveAndReturnHome() {
+        saveNotes();
+        saveChecklist();
+        Toast.makeText(this, "اطلاعات ذخیره شد", Toast.LENGTH_SHORT).show();
+
+        // بازگشت به MainActivity
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(mainIntent);
+        finish();
     }
 
     private void updateUncheckedItemsCount() {
@@ -157,12 +143,9 @@ public class TripDetailsActivity extends AppCompatActivity {
             if (!item.checked) count++;
         }
         tvUncheckedItems.setText("آیتم‌های باقی‌مانده: " + count);
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putInt("unchecked_count_" + tripId, count).apply();
     }
 
-    private void listenTripDataChanges() {
+    private void loadTripData() {
         DocumentReference tripRef = db.collection("users").document(userId)
                 .collection("trips").document(tripId);
 
@@ -171,26 +154,19 @@ public class TripDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "خطا در دریافت داده‌ها", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             if (snapshot != null && snapshot.exists()) {
                 String destination = snapshot.getString("destination");
                 String tripType = snapshot.getString("tripType");
                 String transport = snapshot.getString("transport");
                 String startDateStr = snapshot.getString("startDate");
                 String endDateStr = snapshot.getString("endDate");
-                List<String> companions = (List<String>) snapshot.get("companions");
+                List<String> companions = snapshot.get("companions") instanceof List ? (List<String>) snapshot.get("companions") : new ArrayList<>();
 
-                tvTripTitle.setText(destination != null ? destination : "عنوان نامشخص");
+                tvTripTitle.setText(destination != null ? destination : "نامشخص");
                 tvTripDestination.setText("مقصد: " + (destination != null ? destination : "نامشخص"));
                 tvTripType.setText("نوع سفر: " + (tripType != null ? tripType : "نامشخص"));
                 tvTransportType.setText("وسیله: " + (transport != null ? transport : "نامشخص"));
-
-                if (companions != null && !companions.isEmpty()) {
-                    String companionsText = TextUtils.join("، ", companions);
-                    tvCompanion.setText("همسفر: " + companionsText);
-                } else {
-                    tvCompanion.setText("همسفر: نامشخص");
-                }
+                tvCompanion.setText(companions.isEmpty() ? "همسفر: نامشخص" : "همسفر: " + TextUtils.join("، ", companions));
 
                 tripStartDate = parsePersianDate(startDateStr);
                 tripEndDate = parsePersianDate(endDateStr);
@@ -202,9 +178,6 @@ public class TripDetailsActivity extends AppCompatActivity {
                     tvTripDates.setText("تاریخ: نامشخص");
                     tvDaysRemaining.setText("روز باقی‌مانده: -");
                 }
-            } else {
-                Toast.makeText(this, "اطلاعات سفر یافت نشد", Toast.LENGTH_SHORT).show();
-                finish();
             }
         });
     }
@@ -236,72 +209,73 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     private void saveNotes() {
-        String encrypted = Base64.encodeToString(etNotes.getText().toString().getBytes(), Base64.DEFAULT);
-        prefs.edit().putString("notes", encrypted).apply();
+        String notes = etNotes.getText().toString();
+        db.collection("users").document(userId)
+                .collection("trips").document(tripId)
+                .update("notes", notes);
     }
 
     private void loadNotes() {
-        String encrypted = prefs.getString("notes", "");
-        try {
-            String decrypted = new String(Base64.decode(encrypted, Base64.DEFAULT));
-            etNotes.setText(decrypted);
-        } catch (Exception e) {
-            etNotes.setText("");
-        }
+        db.collection("users").document(userId)
+                .collection("trips").document(tripId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        etNotes.setText(snapshot.getString("notes") != null ? snapshot.getString("notes") : "");
+                    }
+                });
     }
 
     private void saveChecklist() {
-        StringBuilder sb = new StringBuilder();
+        List<Map<String, Object>> listMap = new ArrayList<>();
         for (ChecklistItem item : checklistItems) {
-            sb.append(item.text.replace("|", "")).append("||").append(item.checked).append("##");
+            Map<String, Object> map = new HashMap<>();
+            map.put("text", item.text);
+            map.put("checked", item.checked);
+            listMap.add(map);
         }
-        prefs.edit().putString("checklist", sb.toString()).apply();
+        db.collection("users").document(userId)
+                .collection("trips").document(tripId)
+                .update("checklist", listMap);
     }
 
     private void loadChecklist() {
-        checklistItems.clear();
-        String saved = prefs.getString("checklist", "");
-        if (!TextUtils.isEmpty(saved)) {
-            String[] items = saved.split("##");
-            for (String s : items) {
-                if (TextUtils.isEmpty(s)) continue;
-                String[] parts = s.split("\\|\\|");
-                if (parts.length == 2) {
-                    checklistItems.add(new ChecklistItem(parts[0], Boolean.parseBoolean(parts[1])));
-                }
-            }
-        }
-        adapter.notifyDataSetChanged();
+        db.collection("users").document(userId)
+                .collection("trips").document(tripId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        checklistItems.clear();
+                        List<Map<String, Object>> listMap = snapshot.get("checklist") instanceof List ? (List<Map<String, Object>>) snapshot.get("checklist") : new ArrayList<>();
+                        for (Map<String, Object> map : listMap) {
+                            String text = map.get("text") != null ? map.get("text").toString() : "";
+                            boolean checked = map.get("checked") != null && (boolean) map.get("checked");
+                            checklistItems.add(new ChecklistItem(text, checked));
+                        }
+                        adapter.notifyDataSetChanged();
+                        updateUncheckedItemsCount();
+                    }
+                });
     }
 
     class ChecklistItem {
         String text;
         boolean checked;
-
-        ChecklistItem(String text, boolean checked) {
-            this.text = text;
-            this.checked = checked;
-        }
+        ChecklistItem(String text, boolean checked) { this.text = text; this.checked = checked; }
     }
-
 
     static class ChecklistAdapter extends RecyclerView.Adapter<ChecklistAdapter.ViewHolder> {
         List<ChecklistItem> items;
         OnCheckChangedListener listener;
 
-        ChecklistAdapter(List<ChecklistItem> items) {
-            this.items = items;
-        }
+        ChecklistAdapter(List<ChecklistItem> items) { this.items = items; }
 
-        void setOnCheckChangedListener(OnCheckChangedListener listener) {
-            this.listener = listener;
-        }
+        void setOnCheckChangedListener(OnCheckChangedListener listener) { this.listener = listener; }
 
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_checklist, parent, false);
-            return new ViewHolder(view);
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_checklist, parent, false));
         }
 
         @Override
@@ -312,17 +286,15 @@ public class TripDetailsActivity extends AppCompatActivity {
             holder.checkBox.setChecked(item.checked);
             holder.checkBox.setTextColor(item.checked ? Color.GRAY : Color.BLACK);
 
-            holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            holder.checkBox.setOnCheckedChangeListener((btn, isChecked) -> {
                 item.checked = isChecked;
                 notifyDataSetChanged();
-                if (listener != null) {
-                    listener.onCheckChanged();
-                }
+                if (listener != null) listener.onCheckChanged();
             });
 
             holder.btnEdit.setOnClickListener(v -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                final EditText input = new EditText(v.getContext());
+                EditText input = new EditText(v.getContext());
                 input.setText(item.text);
                 builder.setTitle("ویرایش آیتم")
                         .setView(input)
@@ -338,22 +310,17 @@ public class TripDetailsActivity extends AppCompatActivity {
                 int pos = holder.getAdapterPosition();
                 items.remove(pos);
                 notifyItemRemoved(pos);
-                if (listener != null) {
-                    listener.onCheckChanged();
-                }
+                if (listener != null) listener.onCheckChanged();
             });
         }
 
         @Override
-        public int getItemCount() {
-            return items.size();
-        }
+        public int getItemCount() { return items.size(); }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        static class ViewHolder extends RecyclerView.ViewHolder {
             CheckBox checkBox;
             ImageButton btnEdit, btnDelete;
-
-            ViewHolder(View itemView) {
+            ViewHolder(@NonNull android.view.View itemView) {
                 super(itemView);
                 checkBox = itemView.findViewById(R.id.checkBox);
                 btnEdit = itemView.findViewById(R.id.btnEdit);
@@ -361,8 +328,6 @@ public class TripDetailsActivity extends AppCompatActivity {
             }
         }
 
-        interface OnCheckChangedListener {
-            void onCheckChanged();
-        }
+        interface OnCheckChangedListener { void onCheckChanged(); }
     }
 }

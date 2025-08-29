@@ -57,12 +57,12 @@ public class LoginActivity extends AppCompatActivity {
             String password = login_etPassword.getText().toString();
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "همه فیلدها رو پر کن", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "لطفاً همه فیلدها را پر کنید.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "ایمیل درست وارد کن", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "ایمیل معتبر وارد کنید.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -70,10 +70,16 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Toast.makeText(this, "خوش اومدی " + user.getEmail(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "خوش آمدید " + user.getEmail(), Toast.LENGTH_SHORT).show();
                             goToHome();
                         } else {
-                            Toast.makeText(this, "ورود ناموفق: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            String errorMessage = "ورود ناموفق!";
+                            if (task.getException() instanceof FirebaseAuthInvalidUserException) {
+                                errorMessage = "کاربری با این ایمیل یافت نشد.";
+                            } else if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                errorMessage = "رمز عبور اشتباه است.";
+                            }
+                            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
                         }
                     });
         });
@@ -87,10 +93,31 @@ public class LoginActivity extends AppCompatActivity {
         // دکمه بازگشت
         login_btnBack.setOnClickListener(v -> finish());
 
-        // فراموشی رمز
-        login_tvForgot.setOnClickListener(v ->
-                Toast.makeText(this, "فعلاً باید یادت بیاد :) ", Toast.LENGTH_SHORT).show()
-        );
+        // فراموشی رمز عبور
+        login_tvForgot.setOnClickListener(v -> {
+            String email = login_etEmail.getText().toString().trim();
+            if (email.isEmpty()) {
+                Toast.makeText(this, "لطفاً ابتدا ایمیل خود را وارد کنید.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "ایمیل معتبر وارد کنید.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            firebaseAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "لینک بازیابی رمز عبور به ایمیلتان ارسال شد.", Toast.LENGTH_LONG).show();
+                        } else {
+                            String errorMsg = "خطا در ارسال ایمیل بازیابی!";
+                            if (task.getException() != null) {
+                                errorMsg += " (" + task.getException().getMessage() + ")";
+                            }
+                            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    });
+        });
 
         // رفتن به ثبت‌نام
         login_tvSignup.setOnClickListener(v ->
@@ -109,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (account != null) {
                     firebaseAuthWithGoogle(account.getIdToken());
                 } else {
-                    Toast.makeText(this, "دریافت اطلاعات از گوگل ناموفق بود", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "دریافت اطلاعات از گوگل ناموفق بود.", Toast.LENGTH_SHORT).show();
                 }
             } catch (ApiException e) {
                 Toast.makeText(this, "ورود با گوگل ناموفق بود: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -126,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(this, "سلام " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
                         goToHome();
                     } else {
-                        Toast.makeText(this, "ورود با گوگل شکست خورد", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "ورود با گوگل شکست خورد.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
